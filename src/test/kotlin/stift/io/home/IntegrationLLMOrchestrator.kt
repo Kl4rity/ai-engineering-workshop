@@ -8,7 +8,7 @@ import stift.io.home.evaluation.ResponseEvaluator
 
 @SpringBootTest
 @ActiveProfiles(value = ["local"])
-class IntegrationLLMController {
+class IntegrationLLMOrchestrator {
 
     private lateinit var responseEvaluator: ResponseEvaluator
 

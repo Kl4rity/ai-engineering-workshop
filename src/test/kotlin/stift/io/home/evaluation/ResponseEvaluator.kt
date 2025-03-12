@@ -7,6 +7,8 @@ import dev.langchain4j.data.message.UserMessage
 import dev.langchain4j.model.openai.OpenAiChatModel
 import stift.io.home.config.TestSecrets
 
+// TODO: This will be useful. Jumping between the probabilistic space of LLMs to the deterministic space of tests is a difficult bridge to cross.
+// TODO: As strange as it seems, evaluating agents (aka LLMs evaluating LLMs) have emerged as a promising approach.
 class ResponseEvaluator() {
     private val languageModel =
         OpenAiChatModel.builder()

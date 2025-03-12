@@ -5,6 +5,9 @@ import java.util.*
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 
+// TODO: We want the LLM to be able to use methods on this class. How can we provide them? (Hint: @Tool())
+// TODO: Assuming we had User Entities and Spring Security - how could we retain the UserContext on a path through an LLM?
+// TODO: How can we do that safely?
 interface DurablePantry {
     fun findAll(): List<PantryService.PantryEntry>
     fun findAllWhereNamesExist(
@@ -31,27 +34,6 @@ class PantryService(
         val unit: String
     )
 
-    @Tool(
-        """
-        Save food items with quantities or update inventory to match stated amounts.
-        This method OVERRIDES current quantities. It is idempotent and analogous to a PATCH in HTTP.
-        
-        WORKFLOW:
-        1. Check existing inventory with getFood() first
-        2. Match similar items (e.g., "coffee" might match "coffee beans")
-        3. Use exact item names from inventory when matching
-        4. Only create new entries when no match exists
-        
-        Use for:
-        - Recording purchases
-        - Updating inventory statements (e.g., "I have X of Y")
-        
-        Units: Use "ml"/"liter" for liquids, "g"/"kg" for weight, "piece" for countable items, 
-        "loaf" for bread, "bunch" for grapes/bananas. Default to "piece" when unsure.
-        
-        Use singular forms and simple English categories. Combine same-type items.
-        """
-    )
     fun saveFood(request: StorageRequest): List<PantryEntry> {
         logger.info("Incoming save food Request: $request")
         val saveRequestList = request.items
@@ -76,24 +58,6 @@ class PantryService(
         return savedEntries
     }
 
-    @Tool(
-        """
-        Use saved food ONLY when items are consumed, used up, thrown away, or removed from inventory.
-        
-        WORKFLOW:
-        1. Check inventory with getFood() first
-        2. Match similar items (e.g., "coffee" might match "coffee beans")
-        3. Use exact item names from inventory
-        4. Only use items with a match in inventory
-        
-        DO NOT use for inventory statements like "I have X of Y" - use saveFood instead.
-        
-        Units: "ml"/"liter" for liquids, "g"/"kg" for weight, "piece" for countable items.
-        Default to "piece" when unsure.
-        
-        Always check inventory first to avoid errors.
-        """
-    )
     fun useFood(request: UseFoodRequest): List<PantryEntry> {
         logger.info("Incoming use food Request: $request")
         val existingEntries =
@@ -128,11 +92,6 @@ class PantryService(
         return savedEntries
     }
 
-    @Tool("""
-        Get list of available food items with their quantities.
-        ALWAYS call this function before any saveFood or useFood operation to check what's already in the inventory.
-        Use the results to match similar items and update existing entries instead of creating new ones.
-    """)
     fun getFood(): List<PantryEntry> {
         return durablePantry.findAll()
     }

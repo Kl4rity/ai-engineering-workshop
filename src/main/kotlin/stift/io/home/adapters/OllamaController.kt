@@ -7,9 +7,14 @@ import org.springframework.web.bind.annotation.*
 import java.io.BufferedReader
 import java.time.LocalDateTime
 
+/*
+ * This is an interface supposed to mock the minimum an interface like WebUI needs to
+ * allow us to focus on the LLM side of things instead of the UI. The only method you
+ * really have to pay attention to is @chatRequest()
+ */
 @RestController
 class OllamaController(
-    val llmController: LLMController
+    val llmController: LLMOrchestrator
 ) {
     @RequestMapping("/ollama/**")
     fun handleRequest(request: HttpServletRequest): ResponseEntity<Any> {
@@ -25,11 +30,10 @@ class OllamaController(
     }
 
     @PostMapping("/ollama/api/chat")
-    fun chatRequest(@RequestBody request: OllamaChatRequest, @RequestParam instanceId: String): OllamaChatResponse {
+    fun chatRequest(@RequestBody request: OllamaChatRequest): OllamaChatResponse {
         val lastMessage = request.messages.last()
         val reply = llmController.call(lastMessage.content, lastMessage.images)
 
-        // Dummy values to satisfy Ollama interface for use with other clients
         return OllamaChatResponse(
                 Message(
                         role = "system",
@@ -37,7 +41,7 @@ class OllamaController(
                         images = listOf(),
                         tool_calls = listOf()
                 ),
-                model = "homegrown",
+                model = "workshop",
                 created_at = LocalDateTime.now(),
                 done = true,
                 done_reason = "stop",
@@ -47,6 +51,57 @@ class OllamaController(
                 prompt_eval_duration = 2000,
                 eval_count = 200,
                 eval_duration = 1325948000
+        )
+    }
+
+    @GetMapping("/ollama/api/tags")
+    fun getTags(): TagsResponse {
+        return TagsResponse(
+            models = listOf(
+                ModelInfo(
+                    name = "workshop:latest",
+                    model = "workshop:latest",
+                    modified_at = LocalDateTime.now().toString(),
+                    size = 3817517056,
+                    digest = "sha256:mock",
+                    details = ModelDetails(
+                        format = "gguf",
+                        family = "workshop",
+                        parameter_size = "7B",
+                        quantization_level = "Q4_K_M"
+                    )
+                )
+            )
+        )
+    }
+
+    @GetMapping("/api/models")
+    fun getModels(): Map<String, List<Map<String, Any>>> {
+        return mapOf(
+            "models" to listOf(
+                mapOf(
+                    "id" to "workshop:latest",
+                    "model" to "workshop:latest",
+                    "name" to "workshop:latest",
+                    "modified_at" to LocalDateTime.now().toString(),
+                    "size" to 3817517056,
+                    "digest" to "sha256:mock",
+                    "details" to mapOf(
+                        "format" to "gguf",
+                        "family" to "workshop",
+                        "parameter_size" to "7B",
+                        "quantization_level" to "Q4_K_M"
+                    )
+                )
+            )
+        )
+     }
+
+    @GetMapping("/ollama/api/version")
+    fun getVersion(): Map<String, String> {
+        return mapOf(
+            "version" to "0.0.1",
+            "build" to "latest"
         )
     }
 
@@ -101,8 +156,28 @@ data class Function(val name: String, val arguments: Map<String, Any>)
 data class OllamaChatRequest(
         val stream: Boolean,
         val messages: List<Message>,
-        val options: ChatOptions,
+        val options: ChatOptions?,
         val model: String
 )
 
 data class ChatOptions(val temperature: Int)
+
+data class TagsResponse(
+    val models: List<ModelInfo>
+)
+
+data class ModelInfo(
+    val name: String,
+    val model: String,
+    val modified_at: String,
+    val size: Long,
+    val digest: String,
+    val details: ModelDetails
+)
+
+data class ModelDetails(
+    val format: String,
+    val family: String,
+    val parameter_size: String,
+    val quantization_level: String
+)

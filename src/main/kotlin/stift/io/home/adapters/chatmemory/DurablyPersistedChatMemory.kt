@@ -8,6 +8,8 @@ import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import java.util.*
 
+// TODO: Figure out what this is good for. Why don't we just transmit everything from the FE? It has all messages, doesn't it?
+
 @Service
 class DurablyPersistedChatMemory(
     private val repo: ChatMemoryJpaRepository
