@@ -3,11 +3,9 @@ package stift.io.home
 import jakarta.annotation.PostConstruct
 import org.junit.jupiter.api.Test
 import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.ActiveProfiles
 import stift.io.home.evaluation.ResponseEvaluator
 
 @SpringBootTest
-@ActiveProfiles(value = ["local"])
 class IntegrationLLMOrchestrator {
 
     private lateinit var responseEvaluator: ResponseEvaluator

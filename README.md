@@ -13,5 +13,11 @@ I have distributed various hints and questions throughout the code-base in the f
 * Install SDKMan - https://sdkman.io/
 * Run `sdk env install`
 * `cp .env.example .env` and add you OPENAI API Key
-* Use `SPRING_PROFILES_ACTIVE=local` for `gradle bootRun` in the IDE of your choice or the terminal
+* Start the application using `./gradlew bootRun` or directly from your IDE
 * Start WebUI using `docker compose up`
+
+We'll be using an in-memory H2 database. You can connect to it from:
+* http://localhost:8080/h2-console
+* JDBC URL: `jdbc:h2:mem:testdb`
+* Username: `sa`
+* Password: `password`
