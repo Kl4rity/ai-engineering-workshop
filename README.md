@@ -21,3 +21,8 @@ We'll be using an in-memory H2 database. You can connect to it from:
 * JDBC URL: `jdbc:h2:mem:testdb`
 * Username: `sa`
 * Password: `password`
+
+## Use
+* You can use the setup with `docker compose up` - which will bootstrap a WebUI instance
+OR
+* You just use curl with `curl -X POST -H "Content-Type: application/json" -d '{"message": "Hello, how are you?"}' http://localhost:8080/curl/chat`

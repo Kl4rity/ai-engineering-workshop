@@ -9,7 +9,7 @@ import stift.io.home.adapters.agents.storage.StorageAgentImpl
 class LLMOrchestrator(
     private val storageAgent: StorageAgentImpl,
 ) {
-    fun call(request: String, attachments: List<String>?): String {
+    fun call(request: String): String {
         return this.storageAgent.call(
             request = request
         )

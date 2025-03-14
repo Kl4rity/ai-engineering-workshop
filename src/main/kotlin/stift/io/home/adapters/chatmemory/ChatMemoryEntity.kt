@@ -13,6 +13,6 @@ class ChatMemoryEntity(
     val id: UUID,
     @Column
     val memoryId: String,
-    @Column
+    @Column(columnDefinition = "CLOB")
     val json: String,
 )

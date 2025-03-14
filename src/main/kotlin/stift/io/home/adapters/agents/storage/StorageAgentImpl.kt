@@ -9,12 +9,14 @@ import org.springframework.stereotype.Service
 class StorageAgentImpl(
     openaiLanguageModel: ChatLanguageModel,
 ) {
-    val aiService: StorageAgent =
+    val storageAgent: StorageAgent =
         AiServices.builder(StorageAgent::class.java)
             .chatLanguageModel(openaiLanguageModel)
+//            .tools() // This is where you would register tools
+//            .chatMemory() // This is where you would register a chat memory
             .build()
 
     fun call(request: String): String {
-        return aiService.chat(request)
+        return storageAgent.chat(request)
     }
 }

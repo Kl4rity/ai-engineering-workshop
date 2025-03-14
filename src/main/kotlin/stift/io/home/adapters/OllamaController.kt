@@ -32,7 +32,7 @@ class OllamaController(
     @PostMapping("/ollama/api/chat")
     fun chatRequest(@RequestBody request: OllamaChatRequest): OllamaChatResponse {
         val lastMessage = request.messages.last()
-        val reply = llmController.call(lastMessage.content, lastMessage.images)
+        val reply = llmController.call(lastMessage.content)
 
         return OllamaChatResponse(
                 Message(
